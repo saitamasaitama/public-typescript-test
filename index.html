@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>TypeScript 実行テスト</title>
+    <script src="https://cdn.jsdelivr.net/npm/typescript@latest/lib/typescript.js"></script>
+  </head>
+  <body>
+    <h1>TypeScript 実行デモ</h1>
+    <button id="run">script.ts を実行</button>
+    <pre id="output"></pre>
+
+    <script>
+      async function runTsFile(url) {
+        const outputEl = document.getElementById("output");
+
+        try {
+          // 1. .tsファイルを取得
+          const response = await fetch(url);
+          if (!response.ok) throw new Error("TSファイルが読み込めませんでした");
+          const tsCode = await response.text();
+
+          // 2. TypeScript → JavaScript 変換
+          const jsCode = ts.transpileModule(tsCode, {
+            compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2017 },
+          }).outputText;
+
+          // 3. 実行結果を取得するようにconsole.logをフック
+          const logs = [];
+          const originalLog = console.log;
+          console.log = (...args) => {
+            logs.push(args.join(" "));
+            originalLog(...args);
+          };
+
+          // 4. evalで実行
+          eval(jsCode);
+
+          // 5. 実行結果を表示
+          outputEl.textContent = logs.join("\n") || "(出力なし)";
+          console.log = originalLog; // ログを戻す
+
+        } catch (err) {
+          outputEl.textContent = `エラー: ${err.message}`;
+        }
+      }
+
+      document.getElementById("run").addEventListener("click", () => {
+        runTsFile("script.ts");
+      });
+    </script>
+  </body>
+</html>
+
