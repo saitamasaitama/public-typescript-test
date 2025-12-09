@@ -1,18 +1,82 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <title>TypeScript 実行テスト</title>
-    <script src="https://cdn.jsdelivr.net/npm/typescript@latest/lib/typescript.js"></script>
-  </head>
-  <body>
-    <h1>TypeScript 実行デモ</h1>
-    <button id="run">script.ts を実行</button>
-    <pre id="output"></pre>
+<head>
+  <meta charset="UTF-8" />
+  <title>Reversi TypeScript</title>
+  <script src="https://cdn.jsdelivr.net/npm/typescript@latest/lib/typescript.js"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #222;
+      color: #eee;
+      text-align: center;
+    }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(8, 48px);
+      grid-template-rows: repeat(8, 48px);
+      gap: 2px;
+      margin: 16px auto;
+      width: max-content;
+      background: #0a4;
+      padding: 4px;
+      border-radius: 8px;
+    }
+
+    .cell {
+      width: 48px;
+      height: 48px;
+      background: #0b5a2a;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .cell::after {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border-radius: 999px;
+      box-sizing: border-box;
+    }
+
+    .cell.black::after {
+      background: #000;
+      box-shadow: 0 0 4px #000;
+    }
+
+    .cell.white::after {
+      background: #fff;
+      box-shadow: 0 0 4px #fff;
+    }
+
+    .cell.valid {
+      outline: 2px dashed rgba(255, 255, 0, 0.7);
+      outline-offset: -3px;
+    }
+
+    #status {
+      margin-top: 8px;
+    }
+
+    #resetBtn {
+      margin-top: 8px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Reversi (TS + Browser)</h1>
+  <div id="status"></div>
+  <div id="board"></div>
+  <button id="resetBtn">リセット</button>
 
     <script>
       async function runTsFile(url) {
-        const outputEl = document.getElementById("output");
+        //const outputEl = document.getElementById("output");
 
         try {
           // 1. .tsファイルを取得
@@ -41,14 +105,16 @@
           console.log = originalLog; // ログを戻す
 
         } catch (err) {
-          outputEl.textContent = `エラー: ${err.message}`;
+          //outputEl.textContent = `エラー: ${err.message}`;
+          console.error(`ERROR:${err.message}`);          
         }
       }
 
-      document.getElementById("run").addEventListener("click", () => {
-        runTsFile("script.ts");
+/*      document.getElementById("run").addEventListener("click", () => {
+        
       });
+      */
+      runTsFile("script.ts");
     </script>
-  </body>
+</body>
 </html>
-
