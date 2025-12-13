@@ -301,6 +301,30 @@ function renderBoard() {
   updateStatus();
 }
 
+function checkAndHandlePass(): boolean {
+  const moves = board.getValidMoves(board.currentPlayer);
+
+  if (moves.length === 0) {
+    const isHuman = board.currentPlayer === humanPlayer;
+    showPassMessage(isHuman ? "あなた" : "AI");
+
+    board.switchPlayer();
+    renderBoard();
+
+    return true; // パスした
+  }
+  return false; // パスしていない
+}
+
+function showPassMessage(who: string) {
+  statusEl.textContent = `${who}は置ける場所がないためパスです`;
+
+  setTimeout(() => {
+    renderBoard(); // しばらくしたら通常表示に戻す
+  }, 1200);
+}
+
+
 function updateStatus() {
   const { black, white } = board.countStones();
 
@@ -319,6 +343,12 @@ function updateStatus() {
 }
 
 function humanClick(x: number, y: number) {
+
+  if (checkAndHandlePass()) {
+    // パス後、AIの手番になる
+    setTimeout(aiTurn, 300);
+    return;
+  }
   if (board.currentPlayer !== humanPlayer) return;                    // 自分の手番以外は無視
   if (!board.isValidMove(x, y, humanPlayer)) return;                  // 非合法手なら無視
   board.applyMove(x, y, humanPlayer);
@@ -331,6 +361,11 @@ function humanClick(x: number, y: number) {
 }
 
 function aiTurn() {
+  // AI手番開始時のパス判定
+  if (checkAndHandlePass()) {
+    return;
+  }
+
   if (board.currentPlayer !== aiPlayer) return;
   if (board.isGameOver()) return;
 
